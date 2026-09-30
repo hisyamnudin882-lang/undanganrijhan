@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Spiderman Interaktif</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --red: #af4343;
+            --blue: #0044CC;
+            --yellow: #FADB0F;
+            --dark: #111;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            font-family: 'Comic Neue', cursive;
+            background-color: var(--dark);
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .bangers { font-family: 'Bangers', cursive; letter-spacing: 2px; }
+
+        /* --- 1 & 2. OPENING & WEB PULL --- */
+        #opening {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: url('bg-kota-malam.jpg') center/cover;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 1000;
+            transition: transform 1.5s cubic-bezier(0.5, -0.5, 0.2, 1.5);
+        }
+        .web-pull { transform: translateY(-100vh); }
+
+        .btn-buka {
+            background: var(--yellow); color: var(--dark);
+            font-size: 28px; padding: 15px 40px; border: 4px solid black;
+            box-shadow: 6px 6px 0 black; cursor: pointer;
+            border-radius: 10px; margin-top: 20px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* MENGHILANGKAN BACKGROUND HITAM PADA GIF / VIDEO MP4 */
+        .transparent-media {
+            mix-blend-mode: screen; 
+            -webkit-mix-blend-mode: screen; 
+            display: inline-block;
+        }
+
+        /* MAIN WRAPPER - BACKGROUND DIUBAH DI SINI */
+        .container {
+            max-width: 480px; margin: 0 auto;
+            background: linear-gradient(rgba(15, 32, 39, 0.85), rgba(32, 58, 67, 0.85)), url('bg-utama.jpg') center/cover fixed;
+            background-color: #1a2a3a; 
+            overflow: hidden; position: relative; 
+            min-height: 100vh;
+        }
+
+        /* --- SCROLL ANIMATION CLASS --- */
+        .scroll-hidden { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
+        .scroll-show { opacity: 1; transform: translateY(0); }
+
+        /* ANIMASI MASUK DARI SAMPING UNTUK KOMIK */
+        .slide-left { opacity: 0; transform: translateX(-100px); transition: all 0.8s ease-out; }
+        .slide-right { opacity: 0; transform: translateX(100px); transition: all 0.8s ease-out; }
+        
+        .slide-left.scroll-show, .slide-right.scroll-show {
+            opacity: 1; 
+            transform: translateX(0); 
+            animation: goyang 2.5s ease-in-out infinite 0.8s;
+        }
+
+        @keyframes goyang {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+        }
+
+        /* --- 3. BIRTHDAY INTRO --- */
+        .intro { 
+            text-align: center; 
+            padding: 0 20px 60px; 
+            position: relative; 
+        }
+        
+        .spidey-hang-img { width: 170px; margin-top: -40px; }
+        .intro-name { font-size: 60px; color: var(--yellow); text-shadow: 4px 4px 0 var(--red); margin-top: 10px; }
+        .intro-age { font-size: 40px; color: white; text-shadow: 3px 3px 0 var(--blue); }
+
+        /* --- 4. COMIC STORY PANELS --- */
+        .comic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 20px; }
+        .panel { 
+            background: white; border: 4px solid black; box-shadow: 4px 4px 0 var(--red);
+            height: 150px; position: relative; overflow: hidden; display: flex;
+            justify-content: center; align-items: center; color: black; font-weight: bold;
+            background-size: cover; background-position: center;
+        }
+        .panel:nth-child(3) { grid-column: span 2; height: 200px; } 
+
+        /* --- 5. EVENT DETAILS --- */
+        .details { padding: 40px 20px; text-align: center; }
+        .speech-bubble {
+            background: white; color: black; padding: 20px; border-radius: 20px;
+            border: 4px solid black; margin: 20px auto; position: relative; width: 90%;
+            box-shadow: 5px 5px 0 var(--blue); font-size: 18px; font-weight: bold;
+        }
+        .speech-bubble::after {
+            content: ''; position: absolute; bottom: -20px; left: 30px;
+            border-width: 20px 20px 0 0; border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+
+        /* --- 6. COUNTDOWN --- */
+        .countdown { background: rgba(0,0,0,0.8); padding: 30px 20px; text-align: center; border-top: 4px solid var(--red); border-bottom: 4px solid var(--red); }
+        .timer-box { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
+        .time { 
+            background: var(--red); color: white; padding: 10px; border-radius: 5px; 
+            border: 2px solid black; font-size: 24px; min-width: 60px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .time span { font-size: 12px; font-family: 'Comic Neue', cursive; margin-top: 5px; }
+
+        /* --- 7. GALLERY --- */
+        .gallery-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; scroll-snap-type: x mandatory; }
+        .gallery-item { flex: 0 0 80%; scroll-snap-align: center; border: 4px solid black; box-shadow: 5px 5px 0 var(--yellow); }
+        .gallery-item img { width: 100%; height: auto; display: block; }
+
+        /* --- 8. MINI GAME --- */
+        .game-area { 
+            height: 400px; background: rgba(44, 62, 80, 0.9); position: relative; border: 4px solid black; 
+            margin: 20px 0; overflow: hidden; border-radius: 10px; cursor: crosshair;
+        }
+        .spider-target { 
+            width: 50px; height: 50px; background: url('laba-laba.png') center/cover;
+            position: absolute; cursor: pointer; display: none;
+        }
+        #score-board { font-size: 24px; color: var(--yellow); padding: 10px; }
+
+        /* --- GENERAL BUTTONS --- */
+        .btn { 
+            padding: 12px 20px; font-size: 20px; border: 3px solid black; 
+            border-radius: 8px; cursor: pointer; transition: transform 0.2s;
+        }
+        .btn:active { transform: translateY(2px) translateX(2px); box-shadow: 2px 2px 0 black !important; }
+        .btn-yes { background: var(--yellow); box-shadow: 4px 4px 0 var(--blue); }
+        .btn-no { background: #ccc; box-shadow: 4px 4px 0 #555; }
+        .btn-map { 
+            background: var(--blue); color: white; box-shadow: 4px 4px 0 var(--red); 
+            display: block; width: 100%; text-decoration: none; padding: 15px; margin-top: 20px; 
+        }
+
+        /* --- INPUT FORM STYLE --- */
+        .form-input { 
+            width: 100%; padding: 12px; font-size: 16px; border: 3px solid black; 
+            border-radius: 8px; font-family: inherit; box-shadow: 4px 4px 0 black; 
+            outline: none; transition: 0.3s;
+        }
+        .form-input:focus { box-shadow: 4px 4px 0 var(--yellow); }
+
+        /* --- 9 & 10. RSVP & MAPS --- */
+        /* Padding kanan 25px untuk menyeimbangkan bayangan (shadow) dari form/tombol */
+        .action-section { padding: 40px 25px 40px 20px; text-align: center; }
+        .rsvp-form { display: none; flex-direction: column; gap: 15px; margin-top: 15px; }
+
+        /* --- 11. WISHES --- */
+        .wishes { padding: 20px 25px 20px 20px; }
+        #wish-board { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+
+        /* --- 12. CLOSING --- */
+        .closing { 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 40px 20px 80px 20px; min-height: 400px; 
+            background: var(--red); border-top: 5px solid black; 
+        }
+        .closing h1 { margin-top: 60px; line-height: 1.2; }
+
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop><source src="spiderman-theme.mp3" type="audio/mpeg"></audio>
+    <audio id="webSound"><source src="web-shoot.mp3" type="audio/mpeg"></audio>
+
+    <!-- 1. OPENING -->
+    <div id="opening">
+        <h1 class="bangers" style="font-size: 50px; text-shadow: 4px 4px 0 black; text-align:center;">HEY, SUPERHERO!</h1>
+        <img src="spidey-jump.gif" alt="Spiderman" class="transparent-media" style="width:200px; margin:20px 0;">
+        <button class="bangers btn-buka" onclick="bukaUndangan()">BUKA UNDANGAN 🕷️</button>
+    </div>
+
+    <!-- MAIN KONTEN -->
+    <div class="container">
+        
+        <!-- 3. INTRO -->
+        <div class="intro">
+            <img src="spidey-hang.gif" alt="Hang" class="transparent-media spidey-hang-img scroll-hidden">
+            <div class="intro-name bangers scroll-hidden">HAPPY BIRTHDAY</div>
+            <div class="intro-age bangers scroll-hidden">RIJHAN</div>
+        </div>
+
+        <!-- 4. COMIC STORY -->
+        <div class="comic-grid">
+            <div class="panel slide-left" style="background-image: url('panel1.jpg');"><br></div>
+            <div class="panel slide-right" style="background-image: url('panel2.jpg');"><br></div>
+            <div class="panel slide-left" style="background-image: url('panel3.jpg');"><br></div>
+        </div>
+
+        <!-- 5. EVENT DETAILS -->
+        <div class="details">
+            <video src="spidey-land.mp4" autoplay muted loop playsinline width="120" class="scroll-hidden transparent-media"></video>
+            <div class="speech-bubble scroll-hidden">
+                📅 SABTU, 31 OKTOBER 2026<br>
+                ⏰ 15.00 WIB
+            </div>
+            <div class="speech-bubble scroll-hidden">
+                📍 Az Zahra Shop Cirebon<br>
+                JL. PERJUANGAN 2 BLOK PERSIL, Kec. Kesambi, Kota Cirebon, Jawa Barat
+            </div>
+        </div>
+
+        <!-- 6. COUNTDOWN -->
+        <div class="countdown scroll-hidden">
+            <h2 class="bangers" style="color:var(--yellow); font-size:30px;">🕷️MISSION:</h2>
+            <div class="timer-box bangers">
+                <div class="time"><div id="days">00</div><span>HARI</span></div>
+                <div class="time"><div id="hours">00</div><span>JAM</span></div>
+                <div class="time"><div id="mins">00</div><span>MENIT</span></div>
+                <div class="time"><div id="secs">00</div><span>DETIK</span></div>
+            </div>
+        </div>
+
+        <!-- 7. GALLERY -->
+        <h2 class="bangers scroll-hidden" style="text-align:center; margin-top:30px;">GALERI RIJHAN</h2>
+        <div class="gallery-container scroll-hidden">
+            <div class="gallery-item"><img src="foto1.jpg" alt="Foto 1"></div>
+            <div class="gallery-item"><img src="foto2.jpg" alt="Foto 2"></div>
+            <div class="gallery-item"><img src="foto3.jpg" alt="Foto 3"></div>
+        </div>
+
+        <!-- 8. MINI GAME -->
+        <div class="scroll-hidden" style="text-align: center; margin-top:30px; padding: 0 25px 0 20px;">
+            <h2 class="bangers">🎮 BANTU AKU MENANGKAP LABA-LABA!</h2>
+            <button class="bangers btn btn-yes" onclick="startGame()" id="btn-start-game" style="margin-top: 15px;">START MISSION!</button>
+            <div class="bangers" id="score-board" style="display:none;">SCORE: <span id="score">0</span></div>
+            <div class="game-area" id="gameArea" style="display:none;">
+                <div class="spider-target" id="spider" onclick="catchSpider()"></div>
+            </div>
+            <h2 class="bangers" id="game-win" style="display:none; color:var(--yellow); margin-top:10px;">AWESOME! YOU'RE A SUPERHERO!</h2>
+        </div>
+
+        <!-- 9 & 10. RSVP & MAPS -->
+        <div class="action-section scroll-hidden">
+            <h2 class="bangers" style="font-size:35px; margin-bottom: 15px;">🕷️ AKAN DATANG?</h2>
+            
+            <div id="rsvp-buttons" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button class="bangers btn btn-yes" onclick="showRsvpForm('hadir')">YA, SAYA DATANG</button>
+                <button class="bangers btn btn-no" onclick="showRsvpForm('tidak_hadir')">MAAF, TIDAK BISA</button>
+            </div>
+
+            <div id="rsvp-form" class="rsvp-form">
+                <input type="text" id="rsvp-name" class="form-input" placeholder="Masukkan nama kamu...">
+                <input type="hidden" id="rsvp-status">
+                <button class="bangers btn btn-yes" style="width: 100%;" onclick="kirimRSVP()">KIRIM KONFIRMASI (via WA)</button>
+                <button class="bangers btn btn-no" style="width: 100%;" onclick="batalRSVP()">BATAL</button>
+            </div>
+            
+            <br>
+            <a href="https://maps.app.goo.gl/gL38K2kTWMnw9CP29" target="_blank" class="bangers btn btn-map">📍 BUKA GOOGLE MAPS</a>
+        </div>
+
+        <!-- 11. WISHES -->
+        <div class="wishes scroll-hidden">
+            <h2 class="bangers" style="text-align:center; margin-bottom: 15px;">KIRIM PESAN RAHASIA</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="text" id="wish-name" class="form-input" placeholder="Nama Kamu...">
+                <input type="text" id="wish-input" class="form-input" placeholder="Tulis ucapan selamat di sini...">
+                <button class="bangers btn btn-yes" style="width: 100%;" onclick="kirimUcapanWA()">KIRIM JARING PESAN (via WA) 🕸️</button>
+            </div>
+            
+            <div id="wish-board"></div>
+        </div>
+
+        <!-- 12. CLOSING -->
+        <div class="closing">
+            <h1 class="bangers scroll-hidden" style="font-size: 40px; color:var(--yellow); text-shadow: 4px 4px rgb(31, 10, 255);">
+                SEE YOU, SUPERHERO! <br> KITA BERSATU MERIAHKAN ACARA INI
+            </h1>
+            <video src="spidey-swing.mp4" autoplay muted loop playsinline width="200" class="transparent-media scroll-hidden" style="margin-top:20px;"></video>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        function bukaUndangan() {
+            document.getElementById('webSound').play().catch(e => console.log(e));
+            document.getElementById('bgMusic').play().catch(e => console.log(e));
+            document.getElementById('opening').classList.add('web-pull');
+            
+            setTimeout(() => {
+                document.getElementById('opening').style.display = 'none';
+            }, 1500);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('scroll-show');
+                }
+            });
+        }, { threshold: 0.1 }); 
+
+        document.querySelectorAll('.scroll-hidden, .slide-left, .slide-right').forEach((el) => {
+            observer.observe(el);
+        });
+
+        // Waktu Countdown disesuaikan ke: 31 Oktober 2026, 15:00:00 WIB
+        const countDownDate = new Date("Oct 31, 2026 15:00:00").getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerHTML = days < 10 ? "0"+days : days;
+            document.getElementById("hours").innerHTML = hours < 10 ? "0"+hours : hours;
+            document.getElementById("mins").innerHTML = minutes < 10 ? "0"+minutes : minutes;
+            document.getElementById("secs").innerHTML = seconds < 10 ? "0"+seconds : seconds;
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.querySelector(".timer-box").innerHTML = "<h3 style='color: white;'>MISSION STARTED!</h3>";
+            }
+        }, 1000);
+
+        let score = 0;
+        let gameInterval;
+        const spider = document.getElementById('spider');
+        const gameArea = document.getElementById('gameArea');
+
+        function startGame() {
+            document.getElementById('btn-start-game').style.display = 'none';
+            document.getElementById('score-board').style.display = 'block';
+            gameArea.style.display = 'block';
+            score = 0;
+            document.getElementById('score').innerText = score;
+            
+            gameInterval = setInterval(moveSpider, 1000);
+            moveSpider();
+
+            setTimeout(endGame, 10000);
+        }
+
+        function moveSpider() {
+            spider.style.display = 'block';
+            const maxX = gameArea.clientWidth - 50;
+            const maxY = gameArea.clientHeight - 50;
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            
+            spider.style.left = randomX + 'px';
+            spider.style.top = randomY + 'px';
+        }
+
+        function catchSpider() {
+            score += 10;
+            document.getElementById('score').innerText = score;
+            document.getElementById('webSound').currentTime = 0;
+            document.getElementById('webSound').play().catch(e=>{});
+            spider.style.display = 'none'; 
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            spider.style.display = 'none';
+            gameArea.style.display = 'none';
+            document.getElementById('game-win').style.display = 'block';
+            document.getElementById('game-win').innerText = `MISSION CLEARED! SCORE: ${score}`;
+        }
+
+        /* --- SCRIPT WHATSAPP RSVP --- */
+        function showRsvpForm(status) {
+            document.getElementById('rsvp-buttons').style.display = 'none';
+            document.getElementById('rsvp-form').style.display = 'flex';
+            document.getElementById('rsvp-status').value = status;
+        }
+
+        function batalRSVP() {
+            document.getElementById('rsvp-buttons').style.display = 'flex';
+            document.getElementById('rsvp-form').style.display = 'none';
+            document.getElementById('rsvp-name').value = "";
+        }
+
+        function kirimRSVP() {
+            const nama = document.getElementById('rsvp-name').value.trim();
+            const status = document.getElementById('rsvp-status').value;
+            
+            if (nama === "") {
+                alert("Tolong masukkan nama kamu ya, Superhero!");
+                return;
+            }
+
+            let pesan = "";
+            if (status === 'hadir') {
+                pesan = `Halo! Saya *${nama}*. Saya *AKAN HADIR* di pesta ulang tahun Rijhan. Sampai jumpa! 🕷️🕸️`;
+            } else {
+                pesan = `Halo. Saya *${nama}*. Maaf ya, saya *TIDAK BISA HADIR* di pesta ulang tahun Rijhan kali ini. Selamat ulang tahun! 🙏`;
+            }
+
+            const url = `https://wa.me/${628977077946}?text=${encodeURIComponent(pesan)}`;
+            window.open(url, "_blank");
+            batalRSVP();
+        }
+
+        /* --- SCRIPT WHATSAPP UCAPAN --- */
+        function kirimUcapanWA() {
+            const nama = document.getElementById('wish-name').value.trim();
+            const ucapan = document.getElementById('wish-input').value.trim();
+            
+            if(nama === "" || ucapan === "") {
+                alert("Tolong isi Nama dan Ucapanmu dulu ya!");
+                return;
+            }
+
+            const board = document.getElementById('wish-board');
+            const bubble = document.createElement('div');
+            bubble.className = 'speech-bubble';
+            bubble.style.border = "4px solid var(--red)";
+            bubble.style.boxShadow = "5px 5px 0 var(--yellow)";
+            bubble.innerHTML = `<strong>${nama}</strong><br>${ucapan}`;
+            bubble.style.animation = "pulse 0.5s ease-out";
+            board.prepend(bubble); 
+            
+            const pesanWA = `*Ucapan Ulang Tahun untuk Rijhan* 🎉\n\nDari: *${nama}*\nUcapan: "${ucapan}"`;
+            const urlWA = `https://wa.me/${628977077946}?text=${encodeURIComponent(pesanWA)}`;
+            
+            window.open(urlWA, "_blank");
+            
+            document.getElementById('wish-name').value = "";
+            document.getElementById('wish-input').value = ""; 
+        }
+    </script>
+</body>
+</html>
